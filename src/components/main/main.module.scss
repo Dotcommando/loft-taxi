@@ -1,0 +1,13 @@
+.main {
+  width: 100%;
+  flex: 1;
+  display: flex;
+
+  .inner {
+    position: relative;
+    width: 100%;
+    max-width: 1170px;
+    padding: 1px 15px;
+    margin: 0 auto;
+  }
+}
