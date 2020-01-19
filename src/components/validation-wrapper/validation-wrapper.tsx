@@ -1,5 +1,10 @@
 import React, { useState } from 'react';
-import { IInputState, Validator } from '../../models/common';
+import {
+    IInputState,
+    IValidationResults,
+    IValidatorWithPredefinedRule
+} from '../../models/common';
+import { runValidators } from '../../helpers/validation-engine';
 import { InputTextProps } from '../input-text/input-text';
 
 type ValidationWrapperProps = InputTextProps & {
@@ -14,11 +19,12 @@ type ValidationWrapperProps = InputTextProps & {
     onFirstBlur?: (value: string, inputState: IInputState) => void,
     onFocus?: (value: string, inputState: IInputState) => void,
     onBlur?: (value: string, inputState: IInputState) => void,
-    validator?: Validator,
+    validators?: IValidatorWithPredefinedRule[],
 }
 
 const ValidationWrapper = (InputComponent: React.FC<InputTextProps>) => {
     const WrappedComponent: React.FC<ValidationWrapperProps> = (props: ValidationWrapperProps) => {
+        const [ currValue, setCurrValue ] = useState(props.value);
         const [ touchCount, setTouchCount ] = useState(0);
         const [ inputState, setInputState ] = useState({
             pristine: true,
@@ -31,17 +37,14 @@ const ValidationWrapper = (InputComponent: React.FC<InputTextProps>) => {
         } as IInputState);
 
         function updateValue(newValue: string): string {
+            setCurrValue(newValue);
             props.valueHandler(newValue, inputState);
             return newValue;
         }
 
         function gotFocus() {
             const firstTouch = touchCount === 0;
-            let validationResult = {
-                valid: !!props.validByDefault,
-                errorType: '',
-                errorText: '',
-            };
+            let validationResult: IValidationResults = [];
             let validated = (props.validateAfterFirstFocus || props.validateAfterFocus) ? false : inputState.validated;
 
             setTouchCount(touchCount + 1);
@@ -50,34 +53,32 @@ const ValidationWrapper = (InputComponent: React.FC<InputTextProps>) => {
                 props.onFirstFocus(props.value, inputState);
             }
             if (props.onFocus) props.onFocus(props.value, inputState);
-            if (props.validator) {
+            if (props.validators) {
                 if (firstTouch && props.validateAfterFirstFocus) {
-                    validationResult = props.validator(props.value, inputState);
+                    validationResult = runValidators(props.validators, currValue, inputState);
                     validated = true;
                 }
                 if (!firstTouch && props.validateAfterFocus) {
-                    validationResult = props.validator(props.value, inputState);
+                    validationResult = runValidators(props.validators, currValue, inputState);
                     validated = true;
                 }
             }
+
+            console.log('gotFocus', validationResult);
 
             setInputState({
                 ...inputState,
                 hasFocus: true,
                 firstTouchIsNow: firstTouch,
                 pristine: false,
-                valid: validationResult.valid,
+                valid: false, // !!!
                 validated: validated,
             });
         }
 
         function gotBlur() {
             const firstTouch = touchCount === 1;
-            let validationResult = {
-                valid: !!props.validByDefault,
-                errorType: '',
-                errorText: '',
-            };
+            let validationResult: IValidationResults = [];
             let validated = props.validateAfterBlur ? false : inputState.validated;
 
             if (firstTouch && props.onFirstBlur) {
@@ -85,48 +86,48 @@ const ValidationWrapper = (InputComponent: React.FC<InputTextProps>) => {
                 setInputState({ ...inputState, firstTouchIsNow: false, });
             }
             if (props.onBlur) props.onBlur(props.value, inputState);
-            if (props.validator && props.validateAfterBlur) {
-                validationResult = props.validator(props.value, inputState);
+            if (props.validators && props.validateAfterBlur) {
+                validationResult = runValidators(props.validators, currValue, inputState);
                 validated = true;
             }
+
+            console.log('gotBlur', validationResult);
 
             setInputState({
                 ...inputState,
                 hasFocus: false,
-                valid: validationResult.valid,
+                valid: false, // !!!
                 validated: validated,
             });
         }
 
         function userInput(value: string) {
             const firstTouch = inputState.firstTouchIsNow;
-            let validationResult = {
-                valid: !!props.validByDefault,
-                errorType: '',
-                errorText: '',
-            };
+            let validationResult: IValidationResults = [];
             let validated = (props.validateOnInputBeforeFirstBlur || props.validateOnInputAfterFirstBlur) ?
                 false :
                 inputState.validated;
 
             updateValue(value);
 
-            if (props.validator) {
+            if (props.validators) {
                 if (firstTouch && props.validateOnInputBeforeFirstBlur) {
-                    validationResult = props.validator(value, inputState);
+                    validationResult = runValidators(props.validators, value, inputState);
                     validated = true;
                 }
                 if (!firstTouch && props.validateOnInputAfterFirstBlur) {
-                    validationResult = props.validator(value, inputState);
+                    validationResult = runValidators(props.validators, value, inputState);
                     validated = true;
                 }
             }
+
+            console.log('userInput', validationResult);
 
             setInputState({
                 ...inputState,
                 dirty: true,
                 empty: value.length === 0,
-                valid: validationResult.valid,
+                valid: false, // !!!
                 validated: validated,
             });
         }

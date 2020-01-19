@@ -1,5 +1,11 @@
 import React, { useState } from 'react';
-import { IInputState } from '../../models/common';
+import {
+    IInputState,
+    IValidatorWithPredefinedRule,
+    ValidationRule
+} from '../../models/common';
+import { validatorWithCustomRule } from '../../helpers/validation-engine';
+import { lengthValidator } from '../../helpers/validators';
 import Main from '../../components/main/main';
 import WhiteBox from '../../components/white-box/white-box';
 import ValidationWrapper from '../../components/validation-wrapper/validation-wrapper';
@@ -9,6 +15,15 @@ import styles from './sign-in.module.scss';
 type Props = {};
 
 const ValidatedInputText = ValidationWrapper(InputText);
+
+const rule: ValidationRule = {
+    name: 'length validation',
+    errorMessage: 'Значение должно быть длиннее {min} символов.',
+    criteria: [
+        { name: 'min', value: 5 }
+    ],
+};
+const lengthValidatorWithRule: IValidatorWithPredefinedRule = validatorWithCustomRule(lengthValidator, rule);
 
 const SignIn: React.FunctionComponent<Props> = () => {
     const [ login, setLogin ] = useState('');
@@ -26,21 +41,9 @@ const SignIn: React.FunctionComponent<Props> = () => {
                             value={ login }
                             placeholder={'Логин'}
                             valueHandler={(newLogin: string) => { setLogin(newLogin) }}
-                            onFirstFocus={(value: string, inputState: IInputState) => {
-                                console.log('=========');
-                                console.log('First Focus');
-                                console.log(value);
-                                console.dir(inputState);
-                                console.log('=========');
-                                console.log(' ');
-                            }}
-                            onFirstBlur={(value: string, inputState: IInputState) => {
-                                console.log('=========');
-                                console.log('First Blur');
-                                console.log(value);
-                                console.dir(inputState);
-                                console.log('=========');
-                            }}
+                            validateAfterBlur={true}
+                            validateOnInputAfterFirstBlur={true}
+                            validators={[lengthValidatorWithRule]}
                         />
                 </WhiteBox>
             </div>

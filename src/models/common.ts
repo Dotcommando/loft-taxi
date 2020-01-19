@@ -8,10 +8,35 @@ export type IInputState = {
     empty: boolean,
 };
 
-export type Validator = (value: string, inputState: IInputState) => IValidationResult;
+export interface IValidator {
+    (rule: ValidationRule, value: string, inputState: IInputState): IValidationResult
+}
+
+export interface IValidatorWithPredefinedRule {
+    (value: string, inputState: IInputState): IValidationResult
+}
+
+export interface IValidatorGenerator {
+    (validatorFn: IValidator, rule: ValidationRule) : (value: string, inputState: IInputState) => IValidationResult
+}
+
+export type ValidationCriteria = {
+    name: string,
+    value: string | number,
+}
+
+export type ValidationRule = {
+    name: string,
+    errorMessage: string,
+    criteria: ValidationCriteria[],
+}
 
 export interface IValidationResult {
     valid: boolean,
-    errorType: string,
-    errorText: string,
+    ruleName: string,
+    errorMessage?: string,
+}
+
+export interface IValidationResults extends Array<IValidationResult> {
+    then?: any,
 }

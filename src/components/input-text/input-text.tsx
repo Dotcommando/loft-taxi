@@ -1,4 +1,4 @@
-import React, { FormEvent, useState } from 'react';
+import React, { FormEvent } from 'react';
 import styles from './input-text.module.scss';
 
 export type InputTextProps = {
