@@ -8,11 +8,11 @@ import ValidationWrapper from '../../components/validation-wrapper/validation-wr
 import InputButton from '../../components/input-button/input-button';
 import InputText from '../../components/input-text/input-text';
 import classNames from 'classnames/bind';
-import styles from './sign-in.module.scss';
+import styles from './sign-up.module.scss';
 
 const cx = classNames.bind(styles);
 
-type Props = {};
+type Props = {}
 
 const ValidatedInputText = ValidationWrapper(InputText);
 
@@ -42,30 +42,64 @@ const requiredPasswordRule: ValidationRule = {
 const requiredPasswordValidator: IValidatorWithPredefinedRule =
     validatorWithCustomRule(requiredValidator, requiredPasswordRule);
 
-const SignIn: React.FunctionComponent<Props> = () => {
-    const [ login, setLogin ] = useState('');
+const SignUp: React.FunctionComponent<Props> = () => {
+    const [ email, setEmail ] = useState('');
+    const [ userName, setUserName ] = useState('');
+    const [ userLastName, setUserLastName ] = useState('');
     const [ password, setPassword ] = useState('');
 
-    return (
+    return(
         <Main>
-            <div className={styles['sign-in']}>
+            <div className={styles['sign-up']}>
                 <WhiteBox>
-                    <h1 className={styles['sign-in__title']}>Войти</h1>
-                    <p>Новый пользователь? <a href="#">Зарегистрируйтесь</a></p>
+                    <h1 className={styles['sign-up__title']}>Регистрация</h1>
+                    <p>Уже зарегистрированы? <a href="#">Войти</a></p>
                     <ValidatedInputText
-                        key="login"
-                        name="login"
+                        key="email"
+                        name="email"
                         type="text"
-                        value={ login }
-                        placeholder={'Логин'}
-                        valueHandler={(newLogin: string) => { setLogin(newLogin) }}
+                        value={ email }
+                        placeholder={'E-mail'}
+                        valueHandler={(newEmail: string) => { setEmail(newEmail) }}
                         validateAfterBlur={true}
                         validateOnInputAfterFirstBlur={true}
                         validators={[
                             requiredValidatorWithRule,
-                            lengthValidatorWithRule,
                         ]}
                     />
+                    <div className={styles['two-inputs-row']}>
+                        <div className={styles['input-wrapper']}>
+                            <ValidatedInputText
+                                key="userName"
+                                name="userName"
+                                type="text"
+                                value={ userName }
+                                placeholder={'Имя'}
+                                valueHandler={(newUserName: string) => { setUserName(newUserName) }}
+                                validateAfterBlur={true}
+                                validateOnInputAfterFirstBlur={true}
+                                validators={[
+                                    requiredValidatorWithRule,
+                                ]}
+                            />
+                        </div>
+
+                        <div className={styles['input-wrapper']}>
+                            <ValidatedInputText
+                                key="userLastName"
+                                name="userLastName"
+                                type="text"
+                                value={ userLastName }
+                                placeholder={'Фамилия'}
+                                valueHandler={(newUserLastName: string) => { setUserLastName(newUserLastName) }}
+                                validateAfterBlur={true}
+                                validateOnInputAfterFirstBlur={true}
+                                validators={[
+                                    requiredValidatorWithRule,
+                                ]}
+                            />
+                        </div>
+                    </div>
                     <ValidatedInputText
                         key="password"
                         name="password"
@@ -80,11 +114,12 @@ const SignIn: React.FunctionComponent<Props> = () => {
                             lengthValidatorWithRule,
                         ]}
                     />
+
                     <div className={cx({
                         'row': true,
                         'row_align-right': true
                     })}>
-                        <InputButton mode="primary">Войти</InputButton>
+                        <InputButton mode="primary">Зарегистрироваться</InputButton>
                     </div>
                 </WhiteBox>
             </div>
@@ -92,4 +127,4 @@ const SignIn: React.FunctionComponent<Props> = () => {
     );
 };
 
-export default SignIn;
+export default SignUp;

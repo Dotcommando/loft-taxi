@@ -3,8 +3,15 @@
   top: 50%;
   right: 0;
   transform: translateY(-50%);
+  min-width: 500px;
 }
 
 .sign-in__title {
   margin-bottom: 30px;
+}
+
+.row {}
+
+.row_align-right {
+  text-align: right;
 }
