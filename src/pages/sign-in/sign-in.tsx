@@ -1,11 +1,7 @@
 import React, { useState } from 'react';
-import {
-    IInputState,
-    IValidatorWithPredefinedRule,
-    ValidationRule
-} from '../../models/common';
+import { IValidatorWithPredefinedRule, ValidationRule } from '../../models/common';
 import { validatorWithCustomRule } from '../../helpers/validation-engine';
-import { lengthValidator } from '../../helpers/validators';
+import { lengthValidator, requiredValidator } from '../../helpers/validators';
 import Main from '../../components/main/main';
 import WhiteBox from '../../components/white-box/white-box';
 import ValidationWrapper from '../../components/validation-wrapper/validation-wrapper';
@@ -16,14 +12,23 @@ type Props = {};
 
 const ValidatedInputText = ValidationWrapper(InputText);
 
-const rule: ValidationRule = {
+const lengthRule: ValidationRule = {
     name: 'length validation',
     errorMessage: 'Значение должно быть длиннее {min} символов.',
     criteria: [
-        { name: 'min', value: 5 }
+        { name: 'min', value: 5 },
     ],
 };
-const lengthValidatorWithRule: IValidatorWithPredefinedRule = validatorWithCustomRule(lengthValidator, rule);
+const lengthValidatorWithRule: IValidatorWithPredefinedRule =
+    validatorWithCustomRule(lengthValidator, lengthRule);
+
+const requiredRule: ValidationRule = {
+    name: 'required validation',
+    errorMessage: 'Поле должно быть заполнено.',
+    criteria: [],
+};
+const requiredValidatorWithRule: IValidatorWithPredefinedRule =
+    validatorWithCustomRule(requiredValidator, requiredRule);
 
 const SignIn: React.FunctionComponent<Props> = () => {
     const [ login, setLogin ] = useState('');
@@ -43,7 +48,10 @@ const SignIn: React.FunctionComponent<Props> = () => {
                             valueHandler={(newLogin: string) => { setLogin(newLogin) }}
                             validateAfterBlur={true}
                             validateOnInputAfterFirstBlur={true}
-                            validators={[lengthValidatorWithRule]}
+                            validators={[
+                                requiredValidatorWithRule,
+                                lengthValidatorWithRule,
+                            ]}
                         />
                 </WhiteBox>
             </div>

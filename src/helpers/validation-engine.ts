@@ -9,6 +9,7 @@ import {
 
 export const validationLauncher = () => {
     const validationResult: IValidationResults = [];
+
     Object.defineProperty(validationResult, 'then', {
         enumerable: false,
         value(fn: IValidatorWithPredefinedRule, value: string, inputState: IInputState) {
@@ -16,6 +17,31 @@ export const validationLauncher = () => {
             return validationResult;
         }
     });
+
+    Object.defineProperty(validationResult, 'totalValid', {
+        enumerable: false,
+        value() {
+            let totalValid = true;
+            for (let result of this) {
+                totalValid = totalValid && result.valid;
+            }
+            return totalValid;
+        }
+    });
+
+    Object.defineProperty(validationResult, 'errorMessages', {
+        enumerable: false,
+        value() {
+            const errors: string[] = [];
+            for (let result of this) {
+                if (result.errorMessage) {
+                    errors.push(result.errorMessage);
+                }
+            }
+            return errors;
+        }
+    });
+
     return validationResult;
 };
 
@@ -25,10 +51,11 @@ export const validatorWithCustomRule: IValidatorGenerator =
 
 export const runValidators =
     (validators: IValidatorWithPredefinedRule[], value: string, inputState: IInputState) => {
-    const len = validators.length;
     let results = validationLauncher();
-    for (let i = 0; i < len; i++) {
-        results.then(validators[i], value, inputState)
+    if (!results.then || !results.totalValid) return results;
+    for (let validatorFn of validators) {
+        results.then(validatorFn, value, inputState)
     }
+    results.totalValid();
     return results;
 };

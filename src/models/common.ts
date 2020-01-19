@@ -6,6 +6,7 @@ export type IInputState = {
     hasFocus: boolean,
     firstTouchIsNow: boolean,
     empty: boolean,
+    errorMessages: string[],
 };
 
 export interface IValidator {
@@ -38,5 +39,7 @@ export interface IValidationResult {
 }
 
 export interface IValidationResults extends Array<IValidationResult> {
-    then?: any,
+    then?: { (fn: IValidatorWithPredefinedRule, value: string, inputState: IInputState): IValidationResults },
+    totalValid?: { (): boolean },
+    errorMessages?: { (): string[] },
 }

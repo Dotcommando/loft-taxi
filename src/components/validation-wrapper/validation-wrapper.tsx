@@ -30,10 +30,11 @@ const ValidationWrapper = (InputComponent: React.FC<InputTextProps>) => {
             pristine: true,
             dirty: false,
             validated: false,
-            valid: props.validByDefault || false,
+            valid: props.validByDefault || true,
             hasFocus: false,
             firstTouchIsNow: false,
             empty: props.value.length === 0,
+            errorMessages: [''],
         } as IInputState);
 
         function updateValue(newValue: string): string {
@@ -64,15 +65,14 @@ const ValidationWrapper = (InputComponent: React.FC<InputTextProps>) => {
                 }
             }
 
-            console.log('gotFocus', validationResult);
-
             setInputState({
                 ...inputState,
                 hasFocus: true,
                 firstTouchIsNow: firstTouch,
                 pristine: false,
-                valid: false, // !!!
+                valid: validationResult.totalValid ? validationResult.totalValid() : inputState.valid,
                 validated: validated,
+                errorMessages: validationResult.errorMessages ? validationResult.errorMessages() : inputState.errorMessages,
             });
         }
 
@@ -91,13 +91,13 @@ const ValidationWrapper = (InputComponent: React.FC<InputTextProps>) => {
                 validated = true;
             }
 
-            console.log('gotBlur', validationResult);
-
             setInputState({
                 ...inputState,
                 hasFocus: false,
-                valid: false, // !!!
+                firstTouchIsNow: false,
+                valid: validationResult.totalValid ? validationResult.totalValid() : inputState.valid,
                 validated: validated,
+                errorMessages: validationResult.errorMessages ? validationResult.errorMessages() : inputState.errorMessages,
             });
         }
 
@@ -121,14 +121,13 @@ const ValidationWrapper = (InputComponent: React.FC<InputTextProps>) => {
                 }
             }
 
-            console.log('userInput', validationResult);
-
             setInputState({
                 ...inputState,
                 dirty: true,
                 empty: value.length === 0,
-                valid: false, // !!!
+                valid: validationResult.totalValid ? validationResult.totalValid() : inputState.valid,
                 validated: validated,
+                errorMessages: validationResult.errorMessages ? validationResult.errorMessages() : inputState.errorMessages,
             });
         }
 
@@ -139,6 +138,9 @@ const ValidationWrapper = (InputComponent: React.FC<InputTextProps>) => {
             onBlur={() => gotBlur()}
             valueHandler={(value: string) => userInput(value)}
             value={props.value}
+            hasError={!inputState.valid}
+            valid={inputState.valid}
+            errorMessage={inputState.errorMessages.length > 0 ? inputState.errorMessages[0] : ''}
         />);
     };
 

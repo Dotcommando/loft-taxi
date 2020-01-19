@@ -1,11 +1,17 @@
 import React, { FormEvent } from 'react';
+import classNames from 'classnames/bind';
 import styles from './input-text.module.scss';
+
+const cx = classNames.bind(styles);
 
 export type InputTextProps = {
     type: 'text' | 'password',
     name: string,
     value: string,
     placeholder?: string,
+    hasError?: boolean,
+    valid?: boolean,
+    errorMessage?: string,
     valueHandler: (value: string) => void,
     onFocus?: (value: string) => void,
     onBlur?: (value: string) => void,
@@ -17,6 +23,7 @@ const defaultValues: InputTextProps = {
     placeholder: '',
     value: '',
     valueHandler: (value: string) => {},
+    errorMessage: '',
 };
 
 const InputText: React.FC<InputTextProps> = (props: InputTextProps = defaultValues) => {
@@ -32,7 +39,11 @@ const InputText: React.FC<InputTextProps> = (props: InputTextProps = defaultValu
 
     return(
         <div className={styles['input-text']}>
-            <div className={styles['input-text__container']}>
+            <div className={cx({
+                'input-text__container': true,
+                'has-error': props.hasError,
+                'not-empty': props.value.length > 0
+            })}>
                 <input
                     id={props.name}
                     type={props.type}
@@ -49,6 +60,7 @@ const InputText: React.FC<InputTextProps> = (props: InputTextProps = defaultValu
                 >
                     {props.placeholder}
                 </label>
+                { props.hasError ? <div className={styles['input-text__error']}>{props.errorMessage}</div> : null }
             </div>
         </div>
     );

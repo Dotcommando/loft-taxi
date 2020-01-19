@@ -40,6 +40,10 @@
     border-bottom: 2px solid $blue;
   }
 
+  &.has-error input:focus + .input-text__bottom-line {
+    border-bottom: 2px solid $red;
+  }
+
   .input-text__placeholder {
     display: block;
     top: 15px;
@@ -51,10 +55,26 @@
     color: rgba(0, 0, 0, 0.7);
   }
 
+  &.not-empty input ~ .input-text__placeholder,
   input:focus ~ .input-text__placeholder {
     top: 0;
     font-size: 12px;
     line-height: 20px;
+  }
+
+  input:focus ~ .input-text__placeholder {
     color: $blue;
+  }
+
+  &.has-error input ~ .input-text__placeholder {
+    color: $red;
+  }
+
+  .input-text__error {
+    position: absolute;
+    top: 100%;
+    font-size: 12px;
+    line-height: 20px;
+    color: $red;
   }
 }
