@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link, useHistory } from 'react-router-dom';
 import { IValidatorWithPredefinedRule, ValidationRule } from '../../models/common';
 import { validatorWithCustomRule } from '../../helpers/validation-engine';
 import { lengthValidator, requiredValidator } from '../../helpers/validators';
@@ -47,13 +48,14 @@ const SignUp: React.FunctionComponent<Props> = () => {
     const [ userName, setUserName ] = useState('');
     const [ userLastName, setUserLastName ] = useState('');
     const [ password, setPassword ] = useState('');
+    const history = useHistory();
 
     return(
         <Main>
             <div className={styles['sign-up']}>
                 <WhiteBox>
                     <h1 className={styles['sign-up__title']}>Регистрация</h1>
-                    <p>Уже зарегистрированы? <a href="#">Войти</a></p>
+                    <p>Уже зарегистрированы? <Link to="/">Войти</Link></p>
                     <ValidatedInputText
                         key="email"
                         name="email"
@@ -119,7 +121,7 @@ const SignUp: React.FunctionComponent<Props> = () => {
                         'row': true,
                         'row_align-right': true
                     })}>
-                        <InputButton mode="primary">Зарегистрироваться</InputButton>
+                        <InputButton onClick={() => history.push('/map')} mode="primary">Зарегистрироваться</InputButton>
                     </div>
                 </WhiteBox>
             </div>

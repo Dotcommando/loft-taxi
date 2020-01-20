@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link, useHistory } from 'react-router-dom';
 import { IValidatorWithPredefinedRule, ValidationRule } from '../../models/common';
 import { validatorWithCustomRule } from '../../helpers/validation-engine';
 import { lengthValidator, requiredValidator } from '../../helpers/validators';
@@ -45,13 +46,14 @@ const requiredPasswordValidator: IValidatorWithPredefinedRule =
 const SignIn: React.FunctionComponent<Props> = () => {
     const [ login, setLogin ] = useState('');
     const [ password, setPassword ] = useState('');
+    const history = useHistory();
 
     return (
         <Main>
             <div className={styles['sign-in']}>
                 <WhiteBox>
                     <h1 className={styles['sign-in__title']}>Войти</h1>
-                    <p>Новый пользователь? <a href="#">Зарегистрируйтесь</a></p>
+                    <p>Новый пользователь? <Link to="/sign-up">Зарегистрируйтесь</Link></p>
                     <ValidatedInputText
                         key="login"
                         name="login"
@@ -84,7 +86,7 @@ const SignIn: React.FunctionComponent<Props> = () => {
                         'row': true,
                         'row_align-right': true
                     })}>
-                        <InputButton mode="primary">Войти</InputButton>
+                        <InputButton onClick={() => history.push('/map')} mode="primary">Войти</InputButton>
                     </div>
                 </WhiteBox>
             </div>

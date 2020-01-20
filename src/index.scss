@@ -41,6 +41,11 @@ p {
   margin-bottom: 10px;
 }
 
+ul, ol {
+  margin: 0;
+  padding: 0;
+}
+
 a:link {color: $blue; text-decoration: none;}
 a:visited {color: $blue; text-decoration: none;}
 a:hover {color: $blue; text-decoration: underline;}
