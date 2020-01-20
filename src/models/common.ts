@@ -39,7 +39,7 @@ export interface IValidationResult {
 }
 
 export interface IValidationResults extends Array<IValidationResult> {
-    then?: { (fn: IValidatorWithPredefinedRule, value: string, inputState: IInputState): IValidationResults },
-    totalValid?: { (): boolean },
-    errorMessages?: { (): string[] },
+    then: { (fn: IValidatorWithPredefinedRule, value: string, inputState: IInputState): IValidationResults },
+    totalValid: { (): boolean },
+    errorMessages: { (): string[] },
 }

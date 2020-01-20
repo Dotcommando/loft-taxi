@@ -1,16 +1,15 @@
 import {
     IValidator,
+    IValidationResult,
     IValidationResults,
     ValidationRule,
     IInputState,
     IValidatorGenerator,
-    IValidatorWithPredefinedRule
+    IValidatorWithPredefinedRule,
 } from '../models/common';
 
-
-
 export const validationLauncher = () => {
-    const validationResult: IValidationResults = [];
+    const validationResult: IValidationResult[] = [];
 
     Object.defineProperty(validationResult, 'then', {
         enumerable: false,
@@ -44,8 +43,10 @@ export const validationLauncher = () => {
         }
     });
 
-    return validationResult;
+    return validationResult as IValidationResults;
 };
+
+export const createValidationResults: () => IValidationResults = () => validationLauncher();
 
 export const validatorWithCustomRule: IValidatorGenerator =
     (validatorFn: IValidator, rule: ValidationRule) =>

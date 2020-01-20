@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import {
     IInputState,
+    IValidationResult,
     IValidationResults,
     IValidatorWithPredefinedRule
 } from '../../models/common';
-import { runValidators } from '../../helpers/validation-engine';
+import { createValidationResults, runValidators } from '../../helpers/validation-engine';
 import { InputTextProps } from '../input-text/input-text';
 
 type ValidationWrapperProps = InputTextProps & {
@@ -45,7 +46,7 @@ const ValidationWrapper = (InputComponent: React.FC<InputTextProps>) => {
 
         function gotFocus() {
             const firstTouch = touchCount === 0;
-            let validationResult: IValidationResults = [];
+            let validationResult: IValidationResults = createValidationResults();
             let validated = (props.validateAfterFirstFocus || props.validateAfterFocus) ? false : inputState.validated;
 
             setTouchCount(touchCount + 1);
@@ -70,15 +71,15 @@ const ValidationWrapper = (InputComponent: React.FC<InputTextProps>) => {
                 hasFocus: true,
                 firstTouchIsNow: firstTouch,
                 pristine: false,
-                valid: validationResult.totalValid ? validationResult.totalValid() : inputState.valid,
+                valid: validationResult.totalValid(),
                 validated: validated,
-                errorMessages: validationResult.errorMessages ? validationResult.errorMessages() : inputState.errorMessages,
+                errorMessages: validationResult.errorMessages(),
             });
         }
 
         function gotBlur() {
             const firstTouch = touchCount === 1;
-            let validationResult: IValidationResults = [];
+            let validationResult: IValidationResults = createValidationResults();
             let validated = props.validateAfterBlur ? false : inputState.validated;
 
             if (firstTouch && props.onFirstBlur) {
@@ -95,15 +96,15 @@ const ValidationWrapper = (InputComponent: React.FC<InputTextProps>) => {
                 ...inputState,
                 hasFocus: false,
                 firstTouchIsNow: false,
-                valid: validationResult.totalValid ? validationResult.totalValid() : inputState.valid,
+                valid: validationResult.totalValid(),
                 validated: validated,
-                errorMessages: validationResult.errorMessages ? validationResult.errorMessages() : inputState.errorMessages,
+                errorMessages: validationResult.errorMessages(),
             });
         }
 
         function userInput(value: string) {
             const firstTouch = inputState.firstTouchIsNow;
-            let validationResult: IValidationResults = [];
+            let validationResult: IValidationResults = createValidationResults();
             let validated = (props.validateOnInputBeforeFirstBlur || props.validateOnInputAfterFirstBlur) ?
                 false :
                 inputState.validated;
@@ -125,9 +126,9 @@ const ValidationWrapper = (InputComponent: React.FC<InputTextProps>) => {
                 ...inputState,
                 dirty: true,
                 empty: value.length === 0,
-                valid: validationResult.totalValid ? validationResult.totalValid() : inputState.valid,
+                valid: validationResult.totalValid(),
                 validated: validated,
-                errorMessages: validationResult.errorMessages ? validationResult.errorMessages() : inputState.errorMessages,
+                errorMessages: validationResult.errorMessages(),
             });
         }
 
