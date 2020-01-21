@@ -8,6 +8,7 @@ import WhiteBox from '../../components/white-box/white-box';
 import ValidationWrapper from '../../components/validation-wrapper/validation-wrapper';
 import InputButton from '../../components/input-button/input-button';
 import InputText from '../../components/input-text/input-text';
+import Logo from '../../components/logo/logo';
 import classNames from 'classnames/bind';
 import styles from './sign-up.module.scss';
 
@@ -52,6 +53,7 @@ const SignUp: React.FunctionComponent<Props> = () => {
 
     return(
         <Main>
+            <Logo />
             <div className={styles['sign-up']}>
                 <WhiteBox>
                     <h1 className={styles['sign-up__title']}>Регистрация</h1>
