@@ -1,19 +1,57 @@
-import React from 'react';
+import React, { useLayoutEffect, useRef, useState, CSSProperties } from 'react';
 import Header from '../../components/header/header';
-import Main from '../../components/main/main';
+import mapboxgl from 'mapbox-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
 import styles from './map.module.scss';
+import { throttle } from '../../helpers/throttle';
 
-type Props = {}
+const ACCESS_TOKEN = process.env.REACT_APP_MAPBOX_KEY;
 
-const MAPBOX_TOKEN = 'pk.eyJ1IjoiYWxwaGFyZWQiLCJhIjoiY2s1bmJoOXVxMTUyNjNrcWs1OXY5ZWFrOCJ9.qjvziEv-CFPN-2ONSC5OiQ';
+const DEFAULT_MAP_STATE = {
+    lng: 37.5395,
+    lat: 55.8066,
+    zoom: 16.00,
+};
+
+type Props = {};
 
 const Map: React.FunctionComponent<Props> = () => {
-    return(
+    const [ mapState, setMapState ] = useState(DEFAULT_MAP_STATE);
+
+    const mapContainer: React.RefObject<HTMLDivElement> = useRef(null);
+
+    useLayoutEffect(() => {
+        if (!mapContainer.current) { return; }
+        const map = new mapboxgl.Map({
+            center: [ mapState.lng, mapState.lat ],
+            zoom: mapState.zoom,
+            container: mapContainer.current as HTMLElement,
+            style: 'mapbox://styles/mapbox/streets-v9',
+            accessToken: ACCESS_TOKEN,
+        });
+
+        const throttledMoveHandler = throttle(() => {
+            setMapState({
+                lng: +map.getCenter().lng.toFixed(4),
+                lat: +map.getCenter().lat.toFixed(4),
+                zoom: +map.getZoom().toFixed(2)
+            });
+        }, 100);
+
+        map.on('moveend', throttledMoveHandler);
+    });
+
+    const style: CSSProperties = {
+        position: 'absolute',
+        top: '80px',
+        bottom: 0,
+        width: '100%'
+    };
+
+    return (
         <>
             <Header />
-            <Main>
-                123
-            </Main>
+            <div ref={ mapContainer } style={ style } />
         </>
     );
 };
