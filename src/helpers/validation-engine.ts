@@ -6,6 +6,7 @@ import {
     IInputState,
     IValidatorGenerator,
     IValidatorWithPredefinedRule,
+    IRunValidators,
 } from '../models/common';
 
 export const validationLauncher = () => {
@@ -52,7 +53,7 @@ export const validatorWithCustomRule: IValidatorGenerator =
     (validatorFn: IValidator, rule: ValidationRule) =>
     (value: string, inputState: IInputState) => validatorFn(rule, value, inputState);
 
-export const runValidators =
+export const runValidators: IRunValidators =
     (validators: IValidatorWithPredefinedRule[], value: string, inputState: IInputState) => {
     let results = validationLauncher();
     if (!results.then || !results.totalValid) return results;

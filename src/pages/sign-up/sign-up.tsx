@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
-import { IValidatorWithPredefinedRule, ValidationRule } from '../../models/common';
-import { validatorWithCustomRule } from '../../helpers/validation-engine';
-import { lengthValidator, requiredValidator } from '../../helpers/validators';
+import {
+    lengthValidatorWithRule,
+    requiredValidatorWithRule,
+    requiredPasswordValidator,
+} from './sign-up.validators';
 import Main from '../../components/main/main';
 import WhiteBox from '../../components/white-box/white-box';
 import ValidationWrapper from '../../components/validation-wrapper/validation-wrapper';
@@ -17,32 +19,6 @@ const cx = classNames.bind(styles);
 type Props = {}
 
 const ValidatedInputText = ValidationWrapper(InputText);
-
-const lengthRule: ValidationRule = {
-    name: 'length validation',
-    errorMessage: 'Значение должно быть длиннее {min} символов.',
-    criteria: [
-        { name: 'min', value: 5 },
-    ],
-};
-const lengthValidatorWithRule: IValidatorWithPredefinedRule =
-    validatorWithCustomRule(lengthValidator, lengthRule);
-
-const requiredRule: ValidationRule = {
-    name: 'required validation',
-    errorMessage: 'Поле должно быть заполнено.',
-    criteria: [],
-};
-const requiredValidatorWithRule: IValidatorWithPredefinedRule =
-    validatorWithCustomRule(requiredValidator, requiredRule);
-
-const requiredPasswordRule: ValidationRule = {
-    name: 'required validation',
-    errorMessage: 'Введите, пожалуйста, пароль.',
-    criteria: [],
-};
-const requiredPasswordValidator: IValidatorWithPredefinedRule =
-    validatorWithCustomRule(requiredValidator, requiredPasswordRule);
 
 const SignUp: React.FunctionComponent<Props> = () => {
     const [ email, setEmail ] = useState('');
@@ -123,7 +99,12 @@ const SignUp: React.FunctionComponent<Props> = () => {
                         'row': true,
                         'row_align-right': true
                     })}>
-                        <InputButton onClick={() => history.push('/map')} mode="primary">Зарегистрироваться</InputButton>
+                        <InputButton
+                            onClick={() => history.push('/map')}
+                            mode="primary"
+                        >
+                            Зарегистрироваться
+                        </InputButton>
                     </div>
                 </WhiteBox>
             </div>

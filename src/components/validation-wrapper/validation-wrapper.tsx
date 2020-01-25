@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     IInputState,
-    IValidationResult,
     IValidationResults,
     IValidatorWithPredefinedRule
 } from '../../models/common';
 import { createValidationResults, runValidators } from '../../helpers/validation-engine';
 import { InputTextProps } from '../input-text/input-text';
+import { eventEmitter } from '../../helpers/event-emitter';
 
 type ValidationWrapperProps = InputTextProps & {
     valueHandler: (value: string, inputState: IInputState) => void,
@@ -20,6 +20,7 @@ type ValidationWrapperProps = InputTextProps & {
     onFirstBlur?: (value: string, inputState: IInputState) => void,
     onFocus?: (value: string, inputState: IInputState) => void,
     onBlur?: (value: string, inputState: IInputState) => void,
+    onValidate?: (currValue: string, validationResults: IValidationResults) => void,
     validators?: IValidatorWithPredefinedRule[],
 }
 
@@ -51,9 +52,7 @@ const ValidationWrapper = (InputComponent: React.FC<InputTextProps>) => {
 
             setTouchCount(touchCount + 1);
 
-            if (firstTouch && props.onFirstFocus) {
-                props.onFirstFocus(props.value, inputState);
-            }
+            if (firstTouch && props.onFirstFocus) props.onFirstFocus(props.value, inputState);
             if (props.onFocus) props.onFocus(props.value, inputState);
             if (props.validators) {
                 if (firstTouch && props.validateAfterFirstFocus) {
@@ -64,6 +63,7 @@ const ValidationWrapper = (InputComponent: React.FC<InputTextProps>) => {
                     validationResult = runValidators(props.validators, currValue, inputState);
                     validated = true;
                 }
+                if (props.onValidate) props.onValidate(currValue, validationResult);
             }
 
             setInputState({
@@ -90,6 +90,7 @@ const ValidationWrapper = (InputComponent: React.FC<InputTextProps>) => {
             if (props.validators && props.validateAfterBlur) {
                 validationResult = runValidators(props.validators, currValue, inputState);
                 validated = true;
+                if (props.onValidate) props.onValidate(currValue, validationResult);
             }
 
             setInputState({
@@ -120,6 +121,7 @@ const ValidationWrapper = (InputComponent: React.FC<InputTextProps>) => {
                     validationResult = runValidators(props.validators, value, inputState);
                     validated = true;
                 }
+                if (props.onValidate) props.onValidate(currValue, validationResult);
             }
 
             setInputState({
@@ -131,6 +133,26 @@ const ValidationWrapper = (InputComponent: React.FC<InputTextProps>) => {
                 errorMessages: validationResult.errorMessages(),
             });
         }
+
+        function onRunValidation() {
+            if (!props.validators) return;
+            const validationResult = runValidators(props.validators, currValue, inputState);
+            const validated = true;
+            const newState = {
+                ...inputState,
+                valid: validationResult.totalValid(),
+                validated: validated,
+                errorMessages: validationResult.errorMessages(),
+            };
+            if (props.onValidate) props.onValidate(currValue, validationResult);
+            setInputState(newState);
+        }
+
+        useEffect(() => {
+            const subscription = eventEmitter
+                .subscribe('run validation for ' + props.name, () => onRunValidation());
+            return subscription.unsubscribe();
+        });
 
         return(<InputComponent
             { ...props }

@@ -1,3 +1,5 @@
+@import '../../styles/colors';
+
 .sign-in {
   position: absolute;
   top: 50%;
@@ -8,6 +10,10 @@
 
 .sign-in__title {
   margin-bottom: 30px;
+}
+
+.error-msg {
+  color: $red;
 }
 
 .row {}

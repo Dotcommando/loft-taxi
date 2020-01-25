@@ -1,14 +1,18 @@
-import React from 'react';
+import React, { Dispatch, ReducerAction } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { IAuthReducer } from '../../store/reducers/auth-reducer';
 import logo from '../../images/loft-taxi-logo-grey.png';
 import classNames from 'classnames/bind';
 import styles from './header.module.scss';
 
 const cx = classNames.bind(styles);
 
-type Props = {};
+export interface IHeaderProps {
+//    dispatch: Dispatch<ReducerAction<IAuthReducer>>,
+    email?: string,
+}
 
-const Header: React.FunctionComponent<Props> = (props: Props) =>  {
+const Header: React.FunctionComponent<IHeaderProps> = (props: IHeaderProps) =>  {
     const location = useLocation();
 
     return (
@@ -17,6 +21,13 @@ const Header: React.FunctionComponent<Props> = (props: Props) =>  {
                 <Link to="/map">
                     <img className={styles['logo']} src={logo} alt="Loft Taxi" />
                 </Link>
+                {
+                    props.email
+                    ? <div className={styles['email']}>
+                        { props.email }
+                    </div>
+                    : null
+                }
                 <div className={styles['menu']}>
                     <ul className={styles['menu__ul']}>
                         <li className={cx({

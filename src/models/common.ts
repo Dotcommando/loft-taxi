@@ -43,3 +43,7 @@ export interface IValidationResults extends Array<IValidationResult> {
     totalValid: { (): boolean },
     errorMessages: { (): string[] },
 }
+
+export interface IRunValidators {
+    (validators: IValidatorWithPredefinedRule[], value: string, inputState: IInputState): IValidationResults
+}
