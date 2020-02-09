@@ -3,12 +3,14 @@ import Header from '../../components/header/header';
 import Main from '../../components/main/main';
 import styles from './map.module.scss';
 
-type Props = {}
+type Props = {
+    logOut: () => void
+}
 
-const Profile: React.FunctionComponent<Props> = () => {
+const Profile: React.FunctionComponent<Props> = (props: Props) => {
     return(
         <>
-            <Header />
+            <Header logOut={ props.logOut } />
             <Main>
                 456
             </Main>

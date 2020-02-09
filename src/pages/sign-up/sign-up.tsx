@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import {
     lengthValidatorWithRule,
     requiredValidatorWithRule,
     requiredPasswordValidator,
 } from './sign-up.validators';
+import { IValidationResults } from '../../models/common';
+import { IErrorSetter } from '../../contexts/auth-context';
+import { eventEmitter } from '../../helpers/event-emitter';
 import Main from '../../components/main/main';
 import WhiteBox from '../../components/white-box/white-box';
 import ValidationWrapper from '../../components/validation-wrapper/validation-wrapper';
@@ -16,23 +19,47 @@ import styles from './sign-up.module.scss';
 
 const cx = classNames.bind(styles);
 
-type Props = {}
+export interface ISignUpProps {
+    isAuth: boolean;
+    hasError: boolean;
+    errorMsg: string;
+    logIn: () => void;
+    setError: IErrorSetter;
+}
 
 const ValidatedInputText = ValidationWrapper(InputText);
 
-const SignUp: React.FunctionComponent<Props> = () => {
+const SignUp: React.FunctionComponent<ISignUpProps> = (props: ISignUpProps) => {
     const [ email, setEmail ] = useState('');
     const [ userName, setUserName ] = useState('');
     const [ userLastName, setUserLastName ] = useState('');
     const [ password, setPassword ] = useState('');
-    const history = useHistory();
+
+    const onFieldValidate = (currValue: string, validationResults: IValidationResults, fn: IErrorSetter) => {
+        if (!validationResults.totalValid()) {
+            fn(validationResults.errorMessages()[0]);
+        } else {
+            fn(false);
+        }
+    };
+
+    const onSubmit = () => {
+        eventEmitter.dispatch('run validation for email');
+        eventEmitter.dispatch('run validation for userName');
+        eventEmitter.dispatch('run validation for userLastName');
+        eventEmitter.dispatch('run validation for password');
+        setTimeout(() => {
+            console.log('hasError', props.hasError);
+            // if (!props.hasError) { props.logIn(); console.log(props); }
+        }, 50);
+    };
 
     return(
         <Main>
             <Logo />
             <div className={styles['sign-up']}>
                 <WhiteBox>
-                    <h1 className={styles['sign-up__title']}>Регистрация</h1>
+                    <h1 className={styles['sign-up__title']}>Регистрация { JSON.stringify(props.hasError) }</h1>
                     <p>Уже зарегистрированы? <Link to="/">Войти</Link></p>
                     <ValidatedInputText
                         key="email"
@@ -43,6 +70,10 @@ const SignUp: React.FunctionComponent<Props> = () => {
                         valueHandler={(newEmail: string) => { setEmail(newEmail) }}
                         validateAfterBlur={true}
                         validateOnInputAfterFirstBlur={true}
+                        onValidate={
+                            (currValue: string, validationResults: IValidationResults) =>
+                                onFieldValidate(currValue, validationResults, props.setError)
+                        }
                         validators={[
                             requiredValidatorWithRule,
                         ]}
@@ -58,6 +89,10 @@ const SignUp: React.FunctionComponent<Props> = () => {
                                 valueHandler={(newUserName: string) => { setUserName(newUserName) }}
                                 validateAfterBlur={true}
                                 validateOnInputAfterFirstBlur={true}
+                                onValidate={
+                                    (currValue: string, validationResults: IValidationResults) =>
+                                        onFieldValidate(currValue, validationResults, props.setError)
+                                }
                                 validators={[
                                     requiredValidatorWithRule,
                                 ]}
@@ -74,6 +109,10 @@ const SignUp: React.FunctionComponent<Props> = () => {
                                 valueHandler={(newUserLastName: string) => { setUserLastName(newUserLastName) }}
                                 validateAfterBlur={true}
                                 validateOnInputAfterFirstBlur={true}
+                                onValidate={
+                                    (currValue: string, validationResults: IValidationResults) =>
+                                        onFieldValidate(currValue, validationResults, props.setError)
+                                }
                                 validators={[
                                     requiredValidatorWithRule,
                                 ]}
@@ -89,6 +128,10 @@ const SignUp: React.FunctionComponent<Props> = () => {
                         valueHandler={(newPassword: string) => { setPassword(newPassword) }}
                         validateAfterBlur={true}
                         validateOnInputAfterFirstBlur={true}
+                        onValidate={
+                            (currValue: string, validationResults: IValidationResults) =>
+                                onFieldValidate(currValue, validationResults, props.setError)
+                        }
                         validators={[
                             requiredPasswordValidator,
                             lengthValidatorWithRule,
@@ -100,7 +143,7 @@ const SignUp: React.FunctionComponent<Props> = () => {
                         'row_align-right': true
                     })}>
                         <InputButton
-                            onClick={() => history.push('/map')}
+                            onClick={() => onSubmit()}
                             mode="primary"
                         >
                             Зарегистрироваться

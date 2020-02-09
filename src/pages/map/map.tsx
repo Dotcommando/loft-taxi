@@ -1,7 +1,5 @@
-import React, { useLayoutEffect, useRef, useState, CSSProperties } from 'react';
+import React, { useLayoutEffect, useRef, useState, ReactNode, CSSProperties, } from 'react';
 import { throttle } from '../../helpers/throttle';
-import { AuthConsumer } from '../../store';
-import Header from '../../components/header/header';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
@@ -13,9 +11,11 @@ const DEFAULT_MAP_STATE = {
     zoom: 16.00,
 };
 
-export interface ISignUpProps {}
+export interface ISignUpProps {
+    children: ReactNode,
+}
 
-const Map: React.FunctionComponent<ISignUpProps> = () => {
+const Map: React.FunctionComponent<ISignUpProps> = (props: ISignUpProps) => {
     const [ mapState, setMapState ] = useState(DEFAULT_MAP_STATE);
 
     const mapContainer: React.RefObject<HTMLDivElement> = useRef(null);
@@ -49,16 +49,10 @@ const Map: React.FunctionComponent<ISignUpProps> = () => {
     };
 
     return (
-        <AuthConsumer>
-            {props => {
-                return(
-                    <>
-                        <Header email={props.email} />
-                        <div ref={ mapContainer } style={ style } />
-                    </>
-                );
-            }}
-        </AuthConsumer>
+        <>
+            {props.children}
+            <div ref={ mapContainer } style={ style } />
+        </>
     );
 };
 

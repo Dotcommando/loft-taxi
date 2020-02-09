@@ -1,3 +1,5 @@
+@import '../../styles/colors';
+
 header {
   width: 100%;
   background: #fff;
@@ -58,3 +60,6 @@ header {
 .menu__li_current {
   background: #f2f2f2;
 }
+
+.link {cursor: pointer; color: $blue; text-decoration: none;}
+.link:hover {color: $blue; text-decoration: underline;}

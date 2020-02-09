@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 import {
     IInputState,
     IValidationResults,
@@ -106,9 +106,9 @@ const ValidationWrapper = (InputComponent: React.FC<InputTextProps>) => {
         function userInput(value: string) {
             const firstTouch = inputState.firstTouchIsNow;
             let validationResult: IValidationResults = createValidationResults();
-            let validated = (props.validateOnInputBeforeFirstBlur || props.validateOnInputAfterFirstBlur) ?
-                false :
-                inputState.validated;
+            let validated = (props.validateOnInputBeforeFirstBlur || props.validateOnInputAfterFirstBlur)
+                ? false
+                : inputState.validated;
 
             updateValue(value);
 
@@ -148,11 +148,11 @@ const ValidationWrapper = (InputComponent: React.FC<InputTextProps>) => {
             setInputState(newState);
         }
 
-        useEffect(() => {
+        useLayoutEffect(() => {
             const subscription = eventEmitter
                 .subscribe('run validation for ' + props.name, () => onRunValidation());
-            return subscription.unsubscribe();
-        });
+            return () => subscription.unsubscribe();
+        }, [ props.onValidate, props.validators ]);
 
         return(<InputComponent
             { ...props }

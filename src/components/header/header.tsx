@@ -1,6 +1,5 @@
-import React, { Dispatch, ReducerAction } from 'react';
+import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { IAuthReducer } from '../../store/reducers/auth-reducer';
 import logo from '../../images/loft-taxi-logo-grey.png';
 import classNames from 'classnames/bind';
 import styles from './header.module.scss';
@@ -8,7 +7,7 @@ import styles from './header.module.scss';
 const cx = classNames.bind(styles);
 
 export interface IHeaderProps {
-//    dispatch: Dispatch<ReducerAction<IAuthReducer>>,
+    logOut: () => void,
     email?: string,
 }
 
@@ -46,7 +45,13 @@ const Header: React.FunctionComponent<IHeaderProps> = (props: IHeaderProps) =>  
                             'menu__li': true,
                             'menu__li_current': location.pathname === '/'
                         })}>
-                            <Link to="/">Выйти</Link>
+                            <div
+                                className={cx({
+                                    'link': true,
+                                    'logout': true
+                                })}
+                                onClick={ () => props.logOut() }
+                            >Выйти</div>
                         </li>
                     </ul>
                 </div>
